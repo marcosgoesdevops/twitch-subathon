@@ -84,7 +84,10 @@
           <p class="muted">Cole o <strong>Client ID</strong> do app que você criou na Twitch. O passo a passo está no README.</p>
           <form id="twitch-form" class="stack">
             <label for="client-id">Client ID</label>
-            <input id="client-id" autocomplete="off" spellcheck="false" placeholder="ex.: gp762nuuoqcoxypju8c569th9wz7q5" required>
+            <div class="copy-row">
+              <input id="client-id" type="password" autocomplete="off" spellcheck="false" placeholder="Cole o Client ID aqui" required>
+              <button class="btn" type="button" data-reveal="client-id">Mostrar</button>
+            </div>
             <button class="btn btn-primary" type="submit">Conectar com a Twitch</button>
           </form>
         </div>
@@ -120,7 +123,10 @@
           <p class="muted">No painel do PixGG, copie o <strong>link do widget de alertas</strong> (o mesmo que você usa no OBS) e cole aqui.</p>
           <form id="pixgg-form" class="stack">
             <label for="pixgg-key">Link do widget de alertas</label>
-            <input id="pixgg-key" type="password" autocomplete="off" spellcheck="false" placeholder="https://api.pixgg.com/?apikey=…" required>
+            <div class="copy-row">
+              <input id="pixgg-key" type="password" autocomplete="off" spellcheck="false" placeholder="Cole o link do widget aqui" required>
+              <button class="btn" type="button" data-reveal="pixgg-key">Mostrar</button>
+            </div>
             <button class="btn btn-primary" type="submit">Conectar com o PixGG</button>
           </form>
           <p class="help">Esse link é pessoal: quem tiver ele consegue ver suas doações. Não mostre na live.</p>
@@ -214,7 +220,8 @@
         <h2>🎨 Overlay</h2>
         <label for="overlay-url">Link para o OBS (fonte "Navegador", 800 × 450)</label>
         <div class="copy-row">
-          <input id="overlay-url" readonly>
+          <input id="overlay-url" type="password" readonly>
+          <button class="btn" type="button" data-reveal="overlay-url">Mostrar</button>
           <button class="btn" type="button" id="btn-copy">Copiar</button>
         </div>
 

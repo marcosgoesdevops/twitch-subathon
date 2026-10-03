@@ -259,11 +259,24 @@ $('style-form').addEventListener('submit', (e) => {
 
 const overlayUrl = `http://localhost:${location.port}/overlay/`;
 $('overlay-url').value = overlayUrl;
+
+// Links e chaves ficam mascarados: se o painel aparecer na live sem querer, nada vaza.
+function setRevealed(input, show) {
+  input.type = show ? 'text' : 'password';
+  document.querySelector(`[data-reveal="${input.id}"]`).textContent = show ? 'Ocultar' : 'Mostrar';
+}
+
+for (const button of document.querySelectorAll('[data-reveal]')) {
+  const input = $(button.dataset.reveal);
+  button.addEventListener('click', () => setRevealed(input, input.type === 'password'));
+}
 $('btn-copy').addEventListener('click', () =>
   run(null, async () => {
     try {
       await navigator.clipboard.writeText(overlayUrl);
     } catch {
+      // O navegador não deixa copiar de um campo mascarado: revela antes de selecionar.
+      setRevealed($('overlay-url'), true);
       $('overlay-url').select();
       throw new Error('Não consegui copiar sozinho. O link está selecionado: use Ctrl+C.');
     }
@@ -367,6 +380,7 @@ $('pixgg-form').addEventListener('submit', (e) => {
   run(e.submitter, async () => {
     await api('/api/pixgg/connect', { widgetKey: $('pixgg-key').value });
     $('pixgg-key').value = ''; // o link é pessoal: não fica na tela
+    setRevealed($('pixgg-key'), false);
   });
 });
 

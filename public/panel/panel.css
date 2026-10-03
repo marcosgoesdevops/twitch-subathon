@@ -267,7 +267,7 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 .sim-grid input, .sim-grid select { width: 100%; }
 
 .copy-row { display: flex; gap: 8px; }
-.copy-row input { flex: 1; font-family: ui-monospace, monospace; font-size: 0.85rem; }
+.copy-row input { flex: 1; width: 0; font-family: ui-monospace, monospace; font-size: 0.85rem; } /* width 0: deixa o flex encolher o campo em telas estreitas */
 
 /* Prévia do overlay: renderizado em 800×450 e reduzido para caber no card */
 .preview {
@@ -288,6 +288,7 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
   border: 0;
   transform-origin: 0 0; /* a escala é calculada no panel.js */
   pointer-events: none;
+  color-scheme: normal; /* igual ao overlay; esquemas diferentes fazem o navegador pintar fundo branco no iframe */
 }
 
 /* ---------- Botões ---------- */
