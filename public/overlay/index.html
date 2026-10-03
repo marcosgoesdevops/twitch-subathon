@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subathon · Overlay</title>
+  <link rel="stylesheet" href="overlay.css">
+  <script type="module" src="overlay.js"></script>
+</head>
+<body>
+  <main class="overlay" data-status="idle">
+    <section class="alert" hidden aria-live="polite">
+      <span class="alert-icon"></span>
+      <p class="alert-body"><strong class="alert-user"></strong> <span class="alert-text"></span></p>
+      <span class="alert-time"></span>
+    </section>
+
+    <section class="timer">
+      <div class="badge"><span class="dot"></span><span class="badge-text">Em breve</span></div>
+      <div class="clock">00:00:00</div>
+      <div class="bumps"></div>
+    </section>
+
+    <ul class="last">
+      <li data-kind="bits"><span class="last-label">💎 Bits</span><span class="last-user">—</span><span class="last-detail"></span></li>
+      <li data-kind="sub"><span class="last-label">⭐ Sub</span><span class="last-user">—</span><span class="last-detail"></span></li>
+      <li data-kind="gift"><span class="last-label">🎁 Gift</span><span class="last-user">—</span><span class="last-detail"></span></li>
+      <li data-kind="pix"><span class="last-label">💸 Pix</span><span class="last-user">—</span><span class="last-detail"></span></li>
+    </ul>
+  </main>
+</body>
+</html>

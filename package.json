@@ -1,0 +1,14 @@
+{
+  "name": "subathon-timer",
+  "version": "1.0.0",
+  "description": "Timer de subathon para a Twitch que roda no seu computador: bits e subs adicionam tempo automaticamente.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test src/"
+  }
+}

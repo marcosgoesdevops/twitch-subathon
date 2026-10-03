@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subathon Timer · Painel</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏱️</text></svg>">
+  <link rel="stylesheet" href="panel.css">
+  <script type="module" src="panel.js"></script>
+</head>
+<body>
+  <div class="offline" hidden>⚠️ Sem conexão com o programa. Ele ainda está aberto no terminal? Tentando reconectar…</div>
+
+  <header class="topbar">
+    <h1>⏱️ Subathon Timer</h1>
+    <div class="pills">
+      <span class="pill" id="twitch-pill" data-state="disconnected">Twitch desconectada</span>
+      <span class="pill" id="pixgg-pill" data-state="disconnected">PixGG desconectado</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ===== Coluna principal ===== -->
+    <div class="column">
+      <section class="card hero" data-status="idle">
+        <p class="hero-status" id="status-label">Aguardando início</p>
+        <p class="hero-clock" id="clock">00:00:00</p>
+        <p class="hero-hint" id="status-hint">Configure as regras, teste com o simulador e clique em Iniciar quando a live começar.</p>
+
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" id="btn-start" type="button">▶ Iniciar subathon</button>
+          <button class="btn btn-warn btn-lg" id="btn-pause" type="button">⏸ Pausar</button>
+          <button class="btn btn-primary btn-lg" id="btn-resume" type="button">▶ Continuar</button>
+        </div>
+
+        <form class="adjust" id="adjust-form">
+          <label for="adjust-minutes">Ajustar tempo manualmente</label>
+          <div class="adjust-row">
+            <input id="adjust-minutes" type="number" min="1" max="100000" step="any" value="10" inputmode="decimal" required>
+            <span class="unit">min</span>
+            <button class="btn" type="submit" name="op" value="add">＋ Adicionar</button>
+            <button class="btn" type="submit" name="op" value="remove">－ Remover</button>
+          </div>
+        </form>
+
+        <div class="hero-footer">
+          <button class="btn btn-ghost-danger" id="btn-finish" type="button">Finalizar subathon…</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🏆 Últimos apoiadores</h2>
+        <ul class="last-list">
+          <li data-kind="bits"><span>💎 Bits</span><strong>—</strong><small></small></li>
+          <li data-kind="sub"><span>⭐ Sub</span><strong>—</strong><small></small></li>
+          <li data-kind="gift"><span>🎁 Gift</span><strong>—</strong><small></small></li>
+          <li data-kind="pix"><span>💸 Pix</span><strong>—</strong><small></small></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>📜 Histórico <span class="muted" id="history-count"></span></h2>
+          <a class="btn btn-sm" href="/api/events.csv" download>⬇ Exportar CSV</a>
+        </div>
+        <div class="table-wrap">
+          <table class="history">
+            <thead>
+              <tr><th>Quando</th><th>Quem</th><th>O quê</th><th class="num">Tempo</th></tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+          </table>
+          <p class="empty" id="history-empty">Nenhum evento ainda. Use o simulador para testar!</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Coluna lateral ===== -->
+    <div class="column">
+      <section class="card" id="twitch-card">
+        <h2>🟣 Conexão com a Twitch</h2>
+
+        <div data-view="disconnected">
+          <p class="muted">Cole o <strong>Client ID</strong> do app que você criou na Twitch. O passo a passo está no README.</p>
+          <form id="twitch-form" class="stack">
+            <label for="client-id">Client ID</label>
+            <input id="client-id" autocomplete="off" spellcheck="false" placeholder="ex.: gp762nuuoqcoxypju8c569th9wz7q5" required>
+            <button class="btn btn-primary" type="submit">Conectar com a Twitch</button>
+          </form>
+        </div>
+
+        <div data-view="awaiting_code" hidden>
+          <p>1. Abra <a id="verify-link" href="https://www.twitch.tv/activate" target="_blank" rel="noopener noreferrer">twitch.tv/activate</a></p>
+          <p>2. Digite este código:</p>
+          <p class="device-code" id="device-code">——</p>
+          <p class="muted">3. Autorize o app. Esta tela atualiza sozinha.</p>
+          <button class="btn btn-sm" type="button" data-action="cancel-twitch">Cancelar</button>
+        </div>
+
+        <div data-view="connected" hidden>
+          <p>Conectado como <strong id="twitch-login"></strong>. Bits e subs entram no timer automaticamente.</p>
+          <p class="warning" id="twitch-warning" hidden></p>
+          <button class="btn btn-sm" type="button" data-action="disconnect-twitch">Desconectar</button>
+        </div>
+
+        <div data-view="busy" hidden>
+          <p id="twitch-busy-text">Conectando…</p>
+        </div>
+
+        <div data-view="error" hidden>
+          <p class="error-text" id="twitch-error"></p>
+          <button class="btn btn-sm" type="button" data-action="reset-twitch">Tentar de novo</button>
+        </div>
+      </section>
+
+      <section class="card" id="pixgg-card">
+        <h2>💸 Conexão com o PixGG</h2>
+
+        <div data-view="disconnected">
+          <p class="muted">No painel do PixGG, copie o <strong>link do widget de alertas</strong> (o mesmo que você usa no OBS) e cole aqui.</p>
+          <form id="pixgg-form" class="stack">
+            <label for="pixgg-key">Link do widget de alertas</label>
+            <input id="pixgg-key" type="password" autocomplete="off" spellcheck="false" placeholder="https://api.pixgg.com/?apikey=…" required>
+            <button class="btn btn-primary" type="submit">Conectar com o PixGG</button>
+          </form>
+          <p class="help">Esse link é pessoal: quem tiver ele consegue ver suas doações. Não mostre na live.</p>
+        </div>
+
+        <div data-view="connected" hidden>
+          <p>Conectado! Doações Pix entram no timer automaticamente.</p>
+          <p class="help">A integração usa o mesmo canal do widget de alertas e não é oficial do PixGG. Se parar de funcionar, veja se há uma versão nova do programa.</p>
+          <button class="btn btn-sm" type="button" data-action="disconnect-pixgg">Desconectar</button>
+        </div>
+
+        <div data-view="busy" hidden>
+          <p id="pixgg-busy-text">Conectando…</p>
+          <button class="btn btn-sm" type="button" data-action="cancel-pixgg">Cancelar</button>
+        </div>
+
+        <div data-view="error" hidden>
+          <p class="error-text" id="pixgg-error"></p>
+          <button class="btn btn-sm" type="button" data-action="reset-pixgg">Conectar de novo</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>⚙️ Regras do tempo</h2>
+        <form id="rules-form" class="stack">
+          <label for="initial-minutes">Tempo inicial <small class="muted" id="initial-hint"></small></label>
+          <div class="inline"><input id="initial-minutes" type="number" min="1" max="100000" step="1" required><span class="unit">min</span></div>
+          <p class="help">Só vale antes de iniciar. Depois, use o ajuste manual.</p>
+
+          <fieldset>
+            <legend>💎 Bits</legend>
+            <div class="inline">
+              A cada <input id="bits-per" type="number" min="1" max="1000000" step="1" required> bits
+              → <input id="bits-minutes" type="number" min="0" max="10080" step="any" required> min
+            </div>
+            <p class="help">Proporcional: com 100 bits = 1 min, 250 bits viram 2min 30s.</p>
+          </fieldset>
+
+          <fieldset>
+            <legend>⭐ Subs (vale também para resub e para cada gift)</legend>
+            <div class="tiers">
+              <label>Tier 1 / Prime <span class="inline"><input id="sub-t1" type="number" min="0" max="10080" step="any" required><span class="unit">min</span></span></label>
+              <label>Tier 2 <span class="inline"><input id="sub-t2" type="number" min="0" max="10080" step="any" required><span class="unit">min</span></span></label>
+              <label>Tier 3 <span class="inline"><input id="sub-t3" type="number" min="0" max="10080" step="any" required><span class="unit">min</span></span></label>
+            </div>
+            <p class="help">5 gifts Tier 2 = 5 × minutos do Tier 2, creditados para quem presenteou.</p>
+          </fieldset>
+
+          <fieldset>
+            <legend>💸 Pix (PixGG)</legend>
+            <div class="inline">
+              A cada R$ <input id="pix-per" type="number" min="0.01" max="1000000" step="0.01" required>
+              → <input id="pix-minutes" type="number" min="0" max="10080" step="any" required> min
+            </div>
+            <p class="help">Proporcional: com R$ 10 = 5 min, um Pix de R$ 25 vira 12min 30s.</p>
+          </fieldset>
+
+          <button class="btn btn-primary" type="submit">Salvar regras</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>🧪 Simulador</h2>
+        <p class="muted">Teste o overlay sem precisar de uma doação de verdade. O evento entra no timer e no histórico (marcado como simulado).</p>
+        <form id="simulate-form" class="stack">
+          <div class="sim-grid">
+            <label>Tipo
+              <select id="sim-type">
+                <option value="bits">💎 Bits</option>
+                <option value="sub">⭐ Sub</option>
+                <option value="resub">🔁 Resub</option>
+                <option value="gift">🎁 Gift</option>
+                <option value="pix">💸 Pix</option>
+              </select>
+            </label>
+            <label>Usuário <input id="sim-user" value="ViewerTeste" maxlength="50" required></label>
+            <label id="sim-amount-label">Bits <input id="sim-amount" type="number" min="1" step="1" value="250" required></label>
+            <label id="sim-tier-label" hidden>Tier
+              <select id="sim-tier">
+                <option value="1000">Tier 1 / Prime</option>
+                <option value="2000">Tier 2</option>
+                <option value="3000">Tier 3</option>
+              </select>
+            </label>
+          </div>
+          <button class="btn btn-primary" type="submit">Simular evento</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>🎨 Overlay</h2>
+        <label for="overlay-url">Link para o OBS (fonte "Navegador", 800 × 450)</label>
+        <div class="copy-row">
+          <input id="overlay-url" readonly>
+          <button class="btn" type="button" id="btn-copy">Copiar</button>
+        </div>
+
+        <div class="preview"><iframe src="/overlay/" title="Prévia do overlay" tabindex="-1"></iframe></div>
+
+        <form id="style-form" class="stack">
+          <div class="style-grid">
+            <label>Cor principal <input id="primary-color" type="color"></label>
+            <label>Cor do texto <input id="text-color" type="color"></label>
+            <label>Fonte <select id="font"></select></label>
+          </div>
+          <button class="btn btn-primary" type="submit">Salvar visual</button>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="confirm-dialog">
+    <form method="dialog">
+      <h2 id="confirm-title"></h2>
+      <p id="confirm-text"></p>
+      <label class="confirm-type" id="confirm-type" hidden>
+        <span>Para confirmar, digite <strong id="confirm-word"></strong>:</span>
+        <input id="confirm-input" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="dialog-actions">
+        <button class="btn" value="cancel">Cancelar</button>
+        <button class="btn btn-danger" value="ok" id="confirm-ok"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" aria-live="polite"></div>
+</body>
+</html>

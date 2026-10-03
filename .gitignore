@@ -1,0 +1,3 @@
+node_modules/
+# Configuração, tokens da Twitch e histórico do streamer. Nunca vão para o Git.
+data/
