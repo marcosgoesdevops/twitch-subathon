@@ -193,6 +193,16 @@ test('eventos antes de iniciar entram como tempo extra', () => {
 
 // ---------- Deduplicação ----------
 
+test('resub: channel.subscribe + channel.subscription.message da mesma pessoa contam uma vez', () => {
+  const { sub } = setup();
+  sub.start();
+  assert.ok(sub.apply(subEvent('1000', 'sub', 'fiel'), { id: 'a' }));
+  assert.equal(sub.apply(subEvent('1000', 'resub', 'fiel'), { id: 'b' }), null);
+  assert.ok(sub.apply(subEvent('1000', 'resub', 'outro'), { id: 'c' }));
+  assert.ok(sub.apply(subEvent('1000', 'resub', 'fiel'), { simulated: true })); // simulador não é afetado
+  assert.equal(sub.getState().remainingMs, (60 + 5 + 5 + 5) * MINUTE_MS);
+});
+
 test('mesmo message_id duas vezes: processa uma vez só (inclusive após reiniciar)', () => {
   const { sub, dir } = setup();
   sub.start();

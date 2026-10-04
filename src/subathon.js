@@ -49,6 +49,8 @@ export function validateEvent(input) {
   return { type, user, amount, tier };
 }
 
+const isOwnSub = (e) => e.type === 'sub' || e.type === 'resub';
+
 function integerIn(value, min, max, label) {
   const n = Number(value);
   if (!Number.isInteger(n) || n < min || n > max) {
@@ -186,6 +188,9 @@ export function createSubathon({ dataDir, getConfig, emit = () => {}, now = Date
     apply(input, { id = randomUUID(), simulated = false } = {}) {
       const event = validateEvent(input);
       if (seenIds.has(id)) return null;
+      // A Twitch manda channel.subscribe na renovação e channel.subscription.message quando a pessoa
+      // compartilha o resub no chat: é a mesma assinatura. Um sub por pessoa por subathon (dura ~30 dias).
+      if (!simulated && isOwnSub(event) && events.some((e) => !e.simulated && isOwnSub(e) && e.user === event.user)) return null;
       settle(); // se o tempo zerou agora, o evento já encontra o timer encerrado
       const addedMs = state.status === 'ended' ? 0 : Math.round(minutesFor(event, getConfig().rules) * MINUTE_MS);
       const record = { id, ...event, minutesAdded: addedMs / MINUTE_MS, at: new Date(now()).toISOString(), simulated };
