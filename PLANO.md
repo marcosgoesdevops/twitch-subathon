@@ -118,7 +118,7 @@ data/                     # no .gitignore
   archive/
 README.md                 # PT-BR
 .gitignore
-LICENSE                   # (definir: MIT?)
+LICENSE                   # MIT
 ```
 
 ### Modelo de dados
@@ -200,7 +200,7 @@ Twitch EventSub / Simular
 - Ao reiniciar o bot com o timer rodando, ele volta **pausado** e o streamer clica em "Continuar".
 - Interface e README **só em PT-BR**.
 - Bits e gifts anônimos aparecem como **"Anônimo"**.
-- Licença: **a definir** (sugestão: MIT).
+- Licença: **MIT**.
 
 ---
 

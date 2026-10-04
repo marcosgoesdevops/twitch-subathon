@@ -2,6 +2,8 @@
   "name": "subathon-timer",
   "version": "1.0.0",
   "description": "Timer de subathon para a Twitch que roda no seu computador: bits e subs adicionam tempo automaticamente.",
+  "author": "Marcos (https://github.com/marcosgoesdevops)",
+  "license": "MIT",
   "type": "module",
   "private": true,
   "engines": {

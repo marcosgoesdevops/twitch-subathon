@@ -361,4 +361,8 @@ public/
 | `PIXGG_PUSHER_URL` | Aponta a conexão do PixGG para um mock do protocolo Pusher |
 | `TWITCH_AUTH_URL`, `TWITCH_API_URL`, `TWITCH_EVENTSUB_URL` | Apontam para um mock, ex.: a [Twitch CLI](https://dev.twitch.tv/docs/cli/) (`twitch event websocket start-server`, com `TWITCH_EVENTSUB_URL=ws://127.0.0.1:8080/ws` e `TWITCH_API_URL=http://127.0.0.1:8080`) |
 
-**Licença:** ainda não definida.
+## Créditos
+
+Feito por **Marcos** ([@marcosgoesdevops](https://github.com/marcosgoesdevops)).
+
+**Licença:** [MIT](LICENSE). Pode usar, modificar e distribuir à vontade, desde que mantenha o aviso de copyright.

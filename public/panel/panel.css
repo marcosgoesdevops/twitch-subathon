@@ -391,3 +391,5 @@ dialog form { display: grid; gap: 12px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+.credits { text-align: center; font-size: 0.8rem; padding: 1.5rem 1rem; }
+.credits a { color: inherit; }
